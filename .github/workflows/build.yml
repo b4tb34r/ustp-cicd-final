@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install dev dependencies
+        run: npm install --save-dev vitest @testing-library/dom @testing-library/jest-dom vitest-junit-reporter
+
       - name: Run build
         run: npm run build
       
