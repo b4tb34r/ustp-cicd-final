@@ -92,6 +92,7 @@
         "vite": "^7.2.6",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^6.9.1",
+        "@vitest/coverage-v8": "^4.0.17",
         "vitest": "^4.0.17"
     },
     "workspaces": {
@@ -100,6 +101,7 @@
         ]
     }
 }
+
 
 
 
