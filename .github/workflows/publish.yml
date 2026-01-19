@@ -1,0 +1,67 @@
+
+name: Publish to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_branch:
+        description: 'Branch des letzten erfolgreichen Builds (standard: main)'
+        required: false
+        default: 'main'
+      artifact_name:
+        description: 'Zu verwendendes Build-Artefakt (standard: webapp-build-ubuntu-latest)'
+        required: false
+        default: 'webapp-build-ubuntu-latest'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Download build artifact & deploy to Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (optional)
+        uses: actions/checkout@v4
+
+      # Lädt das Artefakt aus dem letzten erfolgreichen Run der build.yml auf dem gewünschten Branch.
+      # Hinweis: Der Dateiname der Build-Workflow-Datei ist 'build.yml' (so wie bei dir).
+      - name: Download build artifact from latest successful build run
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          branch: ${{ inputs.run_branch }}
+          workflow_conclusion: success
+          name: ${{ inputs.artifact_name }}
+          path: ./site
+          # Extrahieren aktivieren: Dateien stehen direkt im Zielpfad
+          # (da im Build 'dist/**' hochgeladen wird, enthält das Artefakt die Inhalte von dist/)
+          if_no_artifact_found: fail
+          check_artifacts: true
+          skip_unpack: false
+
+      # Optional: Verifiziere, dass Inhalte da sind
+      - name: List downloaded files (debug)
+        run: |
+          echo "Listing ./site:"
+          ls -la ./site
+          echo "Try to detect an index.html (typisch für SPA/Static Site):"
+          find ./site -maxdepth 2 -name "index.html" -print || true
+
+      # Packe die Seiten-Inhalte als Pages-Artifact
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      # Deploye das Pages-Artifact
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
