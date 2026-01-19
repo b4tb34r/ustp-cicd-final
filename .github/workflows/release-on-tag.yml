@@ -1,0 +1,84 @@
+
+name: Release on tag (use last CI artifacts)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'   # z.B. v1.0.0
+
+permissions:
+  contents: write   # benötigt, um Releases zu erstellen & Assets hochzuladen
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_name }}   # z.B. v1.0.0
+
+    steps:
+      - name: Checkout (optional)
+        uses: actions/checkout@v4
+
+      # ⬇️ Artefakt: Linux-Build vom letzten erfolgreichen Run der build.yml (Standard: main)
+      - name: Download Ubuntu artifact from latest successful build
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml               # Dateiname deines CI-Workflows
+          branch: main                      # oder ein anderer Branch
+          workflow_conclusion: success
+          name: webapp-build-ubuntu-latest  # exakter Artifact-Name aus build.yml
+          path: artifacts/ubuntu
+          if_no_artifact_found: fail
+          check_artifacts: true
+          skip_unpack: false
+
+      # ⬇️ Artefakt: Windows-Build (optional, falls du beide Plattformen anhängen willst)
+      - name: Download Windows artifact from latest successful build
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          branch: main
+          workflow_conclusion: success
+          name: webapp-build-windows-latest
+          path: artifacts/windows
+          if_no_artifact_found: fail
+          check_artifacts: true
+          skip_unpack: false
+
+      - name: List downloaded files (debug)
+        run: |
+          echo "=== Ubuntu ===";  ls -la artifacts/ubuntu || true
+          echo "=== Windows ==="; ls -la artifacts/windows || true
+          # Prüfe exemplarisch auf index.html in Ubuntu-Artefakt
+          find artifacts/ubuntu -maxdepth 2 -name "index.html" -print || true
+
+      # 📦 Release-Assets vorbereiten (je Artefakt ein ZIP)
+      - name: Package Ubuntu dist as zip
+        run: |
+          mkdir -p out
+          cd artifacts/ubuntu
+          zip -r "../../out/webapp-dist-ubuntu-${TAG}.zip" .
+
+      - name: Package Windows dist as zip
+        run: |
+          mkdir -p out
+          cd artifacts/windows
+          zip -r "../../out/webapp-dist-windows-${TAG}.zip" .
+
+      # 📝 Release mit Auto-Release-Notes erstellen
+      - name: Create GitHub Release (auto notes)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Titelvorgabe: "USTP CI/CD Tetris vX.X.X"
+          gh release create "${TAG}" \
+            --title "USTP CI/CD Tetris ${TAG}" \
+            --generate-notes
+
+      # ⬆️ ZIP-Assets anhängen
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${TAG}" out/webapp-dist-ubuntu-${TAG}.zip --clobber
+          gh release upload "${TAG}" out/webapp-dist-windows-${TAG}.zip --clobber
