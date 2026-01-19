@@ -13,7 +13,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.ref_name }}   # z.B. v1.0.0
+      TAG: ${{ github.ref_name }}   # z.B. v1.0.0 
 
     steps:
       - name: Checkout (optional)
