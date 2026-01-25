@@ -1,0 +1,10 @@
+vscode
+GitHub
+CI
+CD
+Tetris
+npm
+Node.js
+Vite
+TypeScript
+JavaScript
