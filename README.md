@@ -20,19 +20,19 @@ A simple Tetris web application used to demonstrate CI/CD best practices with Gi
 
 ### Install dependencies
 npm install
-# (Optional für saubere, reproduzierbare Installation wie im CI:)
-# npm ci
+#### (Optional für saubere, reproduzierbare Installation wie im CI:)
+npm ci
 
 ### Build (Production)
 npm run build
-# ➜ erzeugt das Produktions-Build im Ordner `dist/`
+ ➜ erzeugt das Produktions-Build im Ordner `dist/`
 
 ### Run tests (CI mode)
-# lokaler Aufruf analog zum CI
+#### lokaler Aufruf analog zum CI
 npm run test:ci
-# optional mit explizitem CI-Flag:
-# CI=true npm run test:ci
+#### optional mit explizitem CI-Flag:
+CI=true npm run test:ci
 
 ### (Optional) Dev-Server für lokale Entwicklung
 npm run dev
-# ➜ startet den Vite-Dev-Server (Port siehe Terminalausgabe)
+ ➜ startet den Vite-Dev-Server (Port siehe Terminalausgabe)
