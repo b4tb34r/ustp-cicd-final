@@ -1,4 +1,3 @@
-
 name: Publish to GitHub Pages
 
 on:
@@ -11,7 +10,11 @@ on:
       artifact_name:
         description: 'Zu verwendendes Build-Artefakt (standard: webapp-build-ubuntu-latest)'
         required: false
-        default: 'webapp-build-ubuntu-latest'
+        default: 'webapp-build-ubuntu-latest'        
+      coverage_artifact_name:
+        description: 'Coverage-Artefaktname (standard: coverage-report-ubuntu-latest)'
+        required: false
+        default: 'coverage-report-ubuntu-latest'
 
 permissions:
   contents: read
@@ -32,7 +35,6 @@ jobs:
         uses: actions/checkout@v4
 
       # Lädt das Artefakt aus dem letzten erfolgreichen Run der build.yml auf dem gewünschten Branch.
-      # Hinweis: Der Dateiname der Build-Workflow-Datei ist 'build.yml' (so wie bei dir).
       - name: Download build artifact from latest successful build run
         uses: dawidd6/action-download-artifact@v6
         with:
@@ -47,6 +49,48 @@ jobs:
           check_artifacts: true
           skip_unpack: false
 
+      # ⬇️ Coverage-Report (Ubuntu) laden
+      - name: Download coverage artifact (ubuntu)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          branch: ${{ inputs.run_branch }}
+          workflow_conclusion: success
+          name: ${{ inputs.coverage_artifact_name }}   # default: coverage-report-ubuntu-latest
+          path: ./_cov/ubuntu
+          if_no_artifact_found: warn
+          check_artifacts: true
+          skip_unpack: false
+
+      # (Optional) Windows-Coverage als Fallback laden
+      - name: Download coverage artifact (windows) [optional]
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          branch: ${{ inputs.run_branch }}
+          workflow_conclusion: success
+          name: coverage-report-windows-latest
+          path: ./_cov/windows
+          if_no_artifact_found: warn
+          check_artifacts: true
+          skip_unpack: false
+
+      # Coverage-Summary an Pages-Pfad kopieren (Ubuntu bevorzugt, sonst Windows)
+      - name: Prepare public coverage JSON
+        run: |
+          mkdir -p site/coverage
+          if [ -f "_cov/ubuntu/coverage-summary.json" ]; then
+            cp _cov/ubuntu/coverage-summary.json site/coverage/coverage-summary.json
+            echo "Using Ubuntu coverage-summary.json"
+          elif [ -f "_cov/windows/coverage-summary.json" ]; then
+            cp _cov/windows/coverage-summary.json site/coverage/coverage-summary.json
+            echo "Using Windows coverage-summary.json"
+          else
+            echo "No coverage-summary.json found; skipping public coverage export."
+          fi
+
+
       # Optional: Verifiziere, dass Inhalte da sind
       - name: List downloaded files (debug)
         run: |
@@ -54,6 +98,10 @@ jobs:
           ls -la ./site
           echo "Try to detect an index.html (typisch für SPA/Static Site):"
           find ./site -maxdepth 2 -name "index.html" -print || true
+          echo "Listing ./site/coverage (coverage JSON expected):"
+          ls -la ./site/coverage || true
+          test -f ./site/coverage/coverage-summary.json && cat ./site/coverage/coverage-summary.json || true
+
 
       # Packe die Seiten-Inhalte als Pages-Artifact
       - name: Upload Pages artifact
