@@ -1,4 +1,10 @@
-# USTP CICD Final Tetris
+# USTP CICD Final Tetrisv
+
+[![build](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/build.yml/badge.svg)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/build.yml) 
+[![Dependabot Updates](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/dependabot/dependabot-updates) 
+[![Publish to GitHub Pages](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/publish.yml/badge.svg)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/publish.yml) 
+[![Release on tag (use last CI artifacts)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/release-on-tag.yml/badge.svg)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/release-on-tag.yml)
+![coverage](https://img.shields.io/badge/dynamic/json?url=https://b4tb34r.github.io/ustp-cicd-final/coverage/coverage-summary.json&query=$.total.lines.pct&suffix=%25&label=coverage)
 
 A simple Tetris web application used to demonstrate CI/CD best practices with GitHub Actions.
 
