@@ -1,4 +1,4 @@
-# USTP CICD Final Tetrisv
+# USTP CICD Final Tetris
 
 [![build](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/build.yml/badge.svg)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/build.yml) 
 [![Dependabot Updates](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/b4tb34r/ustp-cicd-final/actions/workflows/dependabot/dependabot-updates) 
