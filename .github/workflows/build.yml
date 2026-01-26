@@ -54,3 +54,46 @@ jobs:
           name: coverage-report-${{ matrix.os }}
           path: coverage/coverage-summary.json
 
+
+      # ⬇️ Coverage-Report (Ubuntu) laden
+      - name: Download coverage artifact (ubuntu)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          branch: ${{ inputs.run_branch }}
+          workflow_conclusion: success
+          name: ${{ inputs.coverage_artifact_name }}   # default: coverage-report-ubuntu-latest
+          path: ./_cov/ubuntu
+          if_no_artifact_found: warn
+          check_artifacts: true
+          skip_unpack: false
+
+      # (Optional) Windows-Coverage als Fallback laden
+      - name: Download coverage artifact (windows) [optional]
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          branch: ${{ inputs.run_branch }}
+          workflow_conclusion: success
+          name: coverage-report-windows-latest
+          path: ./_cov/windows
+          if_no_artifact_found: warn
+          check_artifacts: true
+          skip_unpack: false
+
+      # Coverage-Summary an Pages-Pfad kopieren (Ubuntu bevorzugt, sonst Windows)
+      - name: Prepare public coverage JSON
+        run: |
+          mkdir -p site/coverage
+          cp _cov/ubuntu/coverage-summary.json site/coverage/coverage-summary.json
+        
+        #  if [ -f "_cov/ubuntu/coverage-summary.json" ]; then
+        #    cp _cov/ubuntu/coverage-summary.json site/coverage/coverage-summary.json
+        #    echo "Using Ubuntu coverage-summary.json"
+        #  elif [ -f "_cov/windows/coverage-summary.json" ]; then
+        #    cp _cov/windows/coverage-summary.json site/coverage/coverage-summary.json
+        #    echo "Using Windows coverage-summary.json"
+        #  else
+        #    echo "No coverage-summary.json found; skipping public coverage export."
+        #  fi
