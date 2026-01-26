@@ -7,7 +7,8 @@ export default defineConfig({
     environment: 'jsdom',            // DOM-Umgebung für Web-Tests
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/__tests__/**/*.ts'], 
     coverage: {
-      reporter: ['text', 'lcov', 'html'],
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'lcov', 'html'],
       reportsDirectory: 'coverage',
     },
   },
