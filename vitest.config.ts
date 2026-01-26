@@ -9,6 +9,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       all: true,
+      include: ['src/**/*.{ts,tsx,js,jsx}'],
+      collectCoverageFrom: [
+        'src/**/*.{ts,tsx,js,jsx}',
+        '!src/**/*.d.ts',
+        '!src/**/__tests__/**',
+        '!src/**/*.(test|spec).{ts,tsx,js,jsx}',
+      ],
       reporter: ['text', 'json-summary', 'lcov', 'html'],
       reportsDirectory: 'coverage',
     },
