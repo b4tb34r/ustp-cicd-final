@@ -80,15 +80,16 @@ jobs:
       - name: Prepare public coverage JSON
         run: |
           mkdir -p site/coverage
-          if [ -f "_cov/ubuntu/coverage-summary.json" ]; then
-            cp _cov/ubuntu/coverage-summary.json site/coverage/coverage-summary.json
-            echo "Using Ubuntu coverage-summary.json"
-          elif [ -f "_cov/windows/coverage-summary.json" ]; then
-            cp _cov/windows/coverage-summary.json site/coverage/coverage-summary.json
-            echo "Using Windows coverage-summary.json"
-          else
-            echo "No coverage-summary.json found; skipping public coverage export."
-          fi
+          cp _cov/ubuntu/coverage-summary.json site/coverage/coverage-summary.json
+        #  if [ -f "_cov/ubuntu/coverage-summary.json" ]; then
+        #    cp _cov/ubuntu/coverage-summary.json site/coverage/coverage-summary.json
+        #    echo "Using Ubuntu coverage-summary.json"
+        #  elif [ -f "_cov/windows/coverage-summary.json" ]; then
+        #    cp _cov/windows/coverage-summary.json site/coverage/coverage-summary.json
+        #    echo "Using Windows coverage-summary.json"
+        #  else
+        #    echo "No coverage-summary.json found; skipping public coverage export."
+        #  fi
 
 
       # Optional: Verifiziere, dass Inhalte da sind
